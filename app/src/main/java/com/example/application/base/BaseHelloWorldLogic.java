@@ -1,30 +1,36 @@
-package com.example.application;
+package com.example.application.base;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
-import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
-import android.media.projection.MediaProjection;
 import android.os.Handler;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import com.example.application.AecContext;
+import com.example.application.CameraLocalMedia;
+import com.example.application.Config;
+
 import java.util.Locale;
 
-import fm.liveswitch.*;
+import fm.liveswitch.Channel;
+import fm.liveswitch.ChannelClaim;
+import fm.liveswitch.Client;
+import fm.liveswitch.ClientState;
+import fm.liveswitch.Future;
+import fm.liveswitch.Log;
+import fm.liveswitch.ManagedThread;
+import fm.liveswitch.Promise;
+import fm.liveswitch.Token;
 import fm.liveswitch.android.LayoutManager;
-import fm.liveswitch.android.LogProvider;
 
-public class HelloWorldLogic {
+/**
+ * Created by paulbisioc on 05.01.2022
+ */
+public class BaseHelloWorldLogic {
 
     private final Context context;
     private final Handler handler;
-    private static HelloWorldLogic app;
+    private static BaseHelloWorldLogic app;
 
     private String applicationId = Config.applicationId;
     private String channelId = Config.channelId;
@@ -37,19 +43,19 @@ public class HelloWorldLogic {
     boolean unregistering = false;
 
     // Start / Stop Local Media
-    private LocalMedia<View> localMedia;
+    private com.example.application.LocalMedia<View> localMedia;
     private LayoutManager layoutManager;
-    private final AecContext aecContext = new AecContext();
+    private final com.example.application.AecContext aecContext = new AecContext();
 
-    private HelloWorldLogic(Context context)
+    public BaseHelloWorldLogic(Context context)
     {
         this.context = context.getApplicationContext();
         this.handler = new Handler(context.getMainLooper());
     }
 
-    public static synchronized HelloWorldLogic getInstance(Context context){
+    public static synchronized BaseHelloWorldLogic getInstance(Context context){
         if(app == null){
-            app = new HelloWorldLogic(context);
+            app = new BaseHelloWorldLogic(context);
         }
         return app;
     }

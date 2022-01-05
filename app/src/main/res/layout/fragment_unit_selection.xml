@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:context=".UnitSelectionFragment">
+
+        <Button
+            android:id="@+id/sfuButton"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="0.5"
+            android:text="SFU" />
+
+        <Button
+            android:id="@+id/mcuButton"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="0.5"
+            android:text="MCU" />
+
+</LinearLayout>

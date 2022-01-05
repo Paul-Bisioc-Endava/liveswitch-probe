@@ -2,8 +2,6 @@ package com.example.helloworld;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,14 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.application.HelloWorldLogic;
-
-import java.io.InputStream;
-import java.util.concurrent.Executors;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 public class FileSelectionFragment extends Fragment {
 
-    HelloWorldLogic appInstance;
+    BaseHelloWorldLogic appInstance;
 
     public FileSelectionFragment() {
     }
@@ -40,7 +36,8 @@ public class FileSelectionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
         return inflater.inflate(R.layout.fragment_file_selection, container, false);
     }
 

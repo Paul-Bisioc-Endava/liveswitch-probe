@@ -3,10 +3,8 @@ package com.example.helloworld;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,14 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.application.HelloWorldLogic;
-
-import java.io.OutputStream;
-import java.util.concurrent.Executors;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 public class OnFileReceiveFragment extends DialogFragment {
 
-    HelloWorldLogic appInstance;
+    BaseHelloWorldLogic appInstance;
     Context context;
 
     public OnFileReceiveFragment() {
@@ -50,7 +46,8 @@ public class OnFileReceiveFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("New File received, Download?")

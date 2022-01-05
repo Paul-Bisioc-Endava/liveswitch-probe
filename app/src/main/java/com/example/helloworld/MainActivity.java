@@ -14,18 +14,19 @@ import android.os.Bundle;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TableRow;
 
-import com.example.application.HelloWorldLogic;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fm.liveswitch.Future;
-
 public class MainActivity extends AppCompatActivity {
 
     // Fragments
+    private UnitSelectionFragment unitSelectionFragment;
     private StartingFragment startingFragment;
     private BroadcastFragment broadcastFragment;
     private DeviceSwitchingFragment deviceSwitchingFragment;
@@ -35,20 +36,23 @@ public class MainActivity extends AppCompatActivity {
     private FileSelectionFragment fileSelectionFragment;
     private OnFileReceiveFragment onFileReceiveFragment;
 
-    HelloWorldLogic appInstance;
+    BaseHelloWorldLogic appInstance;
+
+    public Boolean isSFUSelected = false;
+    private FrameLayout fullscreenContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        appInstance = HelloWorldLogic.getInstance(getBaseContext());
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(this.isSFUSelected, this.getBaseContext());
+        fullscreenContainer = findViewById(R.id.fullscreenContainer);
         setupAllFragments();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        checkPermissions();
     }
 
     // <CheckingPermissions>
@@ -123,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupAllFragments() {
+        unitSelectionFragment = UnitSelectionFragment.Companion.newInstance();
         startingFragment = StartingFragment.newInstance();
         broadcastFragment = BroadcastFragment.newInstance();
         deviceSwitchingFragment = DeviceSwitchingFragment.newInstance();
@@ -132,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         fileSelectionFragment = FileSelectionFragment.newInstance();
         onFileReceiveFragment = OnFileReceiveFragment.newInstance();
 
-        addDefaultVideoButtons();
+        addInitialFragment();
 
         setupAccessoryFragment(broadcastFragment, view ->
                 addBroadcastingButtons()
@@ -168,7 +173,17 @@ public class MainActivity extends AppCompatActivity {
         // </FileTransfer>
     }
 
+    private void addInitialFragment() {
+        addFragment(unitSelectionFragment, R.id.fullscreenContainer);
+
+    }
+
     public void addDefaultVideoButtons() {
+        if(unitSelectionFragment.isResumed()) {
+            removeFragment(R.id.fullscreenContainer);
+            fullscreenContainer.setVisibility(View.GONE);
+        }
+
         if (!startingFragment.isResumed()) {
             if (broadcastFragment.isResumed()) {
                 broadcastFragment.stop().then(result -> {
@@ -176,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             } else {
                 addFragment(startingFragment, R.id.videoButtons);
+                checkPermissions();
             }
         }
     }

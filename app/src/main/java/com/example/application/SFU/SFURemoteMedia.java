@@ -1,18 +1,20 @@
 // - Set to the appropriate package location in your project
-package com.example.application;
+package com.example.application.SFU;
 
 import android.content.Context;
 import android.widget.FrameLayout;
 
+import com.example.application.AecContext;
+
 import fm.liveswitch.*;
 import fm.liveswitch.android.OpenGLSink;
 
-public class RemoteMedia extends RtcRemoteMedia<FrameLayout> {
+public class SFURemoteMedia extends RtcRemoteMedia<FrameLayout> {
 
     private final Context context;
 
     // Enable AEC
-    public RemoteMedia(final Context context, boolean disableAudio, boolean disableVideo, AecContext aecContext) {
+    public SFURemoteMedia(final Context context, boolean disableAudio, boolean disableVideo, AecContext aecContext) {
         super(disableAudio, disableVideo, aecContext);
         this.context = context;
         super.initialize();

@@ -8,18 +8,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.application.HelloWorldLogic;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 public class TextChannelFragment extends DialogFragment {
 
-    private HelloWorldLogic appInstance;
+    private BaseHelloWorldLogic appInstance;
     private static String messages = "";
     private EditText inputField;
     private TextView chatMessages;
@@ -41,7 +40,8 @@ public class TextChannelFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_text_channel, null);
 
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
 
         setUpTextMessaging(view);
         builder.setView(view);

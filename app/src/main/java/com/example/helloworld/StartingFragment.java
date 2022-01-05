@@ -11,14 +11,15 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.application.HelloWorldLogic;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 import fm.liveswitch.Promise;
 import fm.liveswitch.Future;
 
 public class StartingFragment extends Fragment {
 
-    private HelloWorldLogic appInstance;
+    private BaseHelloWorldLogic appInstance;
     private Button joinButton;
     private Button leaveButton;
 
@@ -39,7 +40,8 @@ public class StartingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
 
         View startingView = inflater.inflate(R.layout.fragment_starting, container, false);
 

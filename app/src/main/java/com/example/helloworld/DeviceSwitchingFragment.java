@@ -17,14 +17,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.example.application.HelloWorldLogic;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 import fm.liveswitch.SourceInput;
 
 
 public class DeviceSwitchingFragment extends Fragment {
 
-    private HelloWorldLogic appInstance;
+    private BaseHelloWorldLogic appInstance;
 
     public DeviceSwitchingFragment() {
     }
@@ -44,7 +45,8 @@ public class DeviceSwitchingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
         return inflater.inflate(R.layout.fragment_device_switching, container, false);
     }
 

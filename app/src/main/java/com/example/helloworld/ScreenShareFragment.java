@@ -14,11 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.application.HelloWorldLogic;
+import com.example.application.base.BaseHelloWorldLogic;
+import com.example.application.base.HelloWorldLogicMediator;
 
 public class ScreenShareFragment extends Fragment {
 
-    private HelloWorldLogic appInstance;
+    private BaseHelloWorldLogic appInstance;
     private static boolean isProjectionReady = false;
 
     public ScreenShareFragment() {
@@ -38,7 +39,8 @@ public class ScreenShareFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
-        appInstance = HelloWorldLogic.getInstance(getActivity().getBaseContext());
+        MainActivity mainActivity = (MainActivity) getActivity();
+        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
         Intent intent = new Intent(getActivity().getApplicationContext(), BackgroundService.class);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
