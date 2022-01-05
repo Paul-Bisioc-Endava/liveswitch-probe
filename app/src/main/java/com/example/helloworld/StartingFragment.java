@@ -96,10 +96,7 @@ public class StartingFragment extends Fragment {
 
     public Future<Object> start() {
         Promise<Object> promise = new Promise<>();
-        // <LocalMedia>
-//        appInstance.startLocalMedia(getActivity(), getVideoContainer()).then(resultStart -> {
-        // </LocalMedia>
-
+        appInstance.startLocalMedia(getActivity(), getVideoContainer()).then(resultStart -> {
             appInstance.joinAsync().then(resultJoin -> {
                 String message = String.format("Client %s has successfully joined channel %s.",
                         appInstance.getClient().getId(),
@@ -111,12 +108,10 @@ public class StartingFragment extends Fragment {
                 promise.reject(ex);
             });
 
-        // <LocalMedia>
-//        }).fail(ex -> {
-//            setStatusText("Unable to start local media.");
-//            promise.reject(null);
-//        });
-        // </LocalMedia>
+        }).fail(ex -> {
+            setStatusText("Unable to start local media.");
+            promise.reject(null);
+        });
 
         return promise;
     }

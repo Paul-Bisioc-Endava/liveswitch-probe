@@ -31,9 +31,15 @@ public class HelloWorldLogic {
     private String gatewayUrl = Config.gatewayUrl;
     private String sharedSecret = Config.sharedSecret;
 
+    // Register / Unregister
     int reRegisterBackoff = 200;
     int maxRegisterBackoff = 60000;
     boolean unregistering = false;
+
+    // Start / Stop Local Media
+    private LocalMedia<View> localMedia;
+    private LayoutManager layoutManager;
+    private final AecContext aecContext = new AecContext();
 
     private HelloWorldLogic(Context context)
     {
@@ -114,5 +120,54 @@ public class HelloWorldLogic {
         channel = channels[0];
 
         Log.info("Client " + client.getId() + " has successfully registered to channel = " + channel.getId() + ", Hello World!");
+    }
+
+    public Future<Object> startLocalMedia(final Activity activity, final RelativeLayout container) {
+        final Promise<Object> promise = new Promise<>();
+
+        activity.runOnUiThread(() -> {
+            // Create a new local media with audio and video enabled.
+            localMedia = new CameraLocalMedia(context, false, false, aecContext);
+
+            // Set local media in the layout.
+            layoutManager = new LayoutManager(container);
+            layoutManager.setLocalView(localMedia.getView());
+
+            // Start capturing local media.
+            localMedia.start().then(localMedia -> {
+                promise.resolve(null);
+
+            }, promise::reject);
+        });
+
+        return promise;
+    }
+
+    public Future<Object> stopLocalMedia() {
+        final Promise<Object> promise = new Promise<>();
+
+        if (localMedia == null) {
+            promise.resolve(null);
+        } else {
+            // Stop capturing local media.
+            localMedia.stop().then(result -> {
+                if (layoutManager != null) {
+                    // Remove views from the layout.
+                    layoutManager.removeRemoteViews();
+                    layoutManager.unsetLocalView();
+                    layoutManager = null;
+                }
+
+                if (localMedia != null) {
+                    localMedia.destroy();
+                    localMedia = null;
+                }
+
+                promise.resolve(null);
+
+            }, promise::reject);
+        }
+
+        return promise;
     }
 }
