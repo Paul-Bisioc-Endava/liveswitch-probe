@@ -2,6 +2,7 @@ package com.example.application.SFU;
 
 import android.content.Context;
 
+import com.example.application.MCU.MCUHelloWorldLogic;
 import com.example.application.base.BaseHelloWorldLogic;
 
 import java.util.HashMap;
@@ -22,12 +23,18 @@ public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
     private SfuUpstreamConnection upstreamConnection;
     private final HashMap<String, SfuDownstreamConnection> downstreamConnections = new HashMap<>();
 
-
     public SFUHelloWorldLogic(Context context) {
         super(context);
     }
 
-    public static SfuUpstreamConnection openSfuUpstreamConnection(LocalMedia localMedia) {
+    public static synchronized SFUHelloWorldLogic getInstance(Context context){
+        if(app == null){
+            app = new SFUHelloWorldLogic(context);
+        }
+        return (SFUHelloWorldLogic) app;
+    }
+
+    public SfuUpstreamConnection openSfuUpstreamConnection(LocalMedia localMedia) {
         // Create audio and video streams from local media.
         AudioStream audioStream = (localMedia.getAudioTrack() != null) ? new AudioStream(localMedia) : null;
         VideoStream videoStream = (localMedia.getVideoTrack() != null) ? new VideoStream(localMedia) : null;

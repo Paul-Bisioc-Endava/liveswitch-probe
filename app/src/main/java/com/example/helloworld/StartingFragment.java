@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.application.MCU.MCUHelloWorldLogic;
+import com.example.application.SFU.SFUHelloWorldLogic;
 import com.example.application.base.BaseHelloWorldLogic;
 import com.example.application.base.HelloWorldLogicMediator;
 
@@ -39,10 +41,15 @@ public class StartingFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment.
         MainActivity mainActivity = (MainActivity) getActivity();
-        appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, getActivity().getBaseContext());
 
+        // Define the appInstance
+        if(mainActivity.isSFUSelected == null)
+            appInstance = BaseHelloWorldLogic.getInstance(mainActivity);
+        else
+            appInstance = HelloWorldLogicMediator.Companion.getInstance(mainActivity.isSFUSelected, mainActivity);
+
+        // Inflate the layout for this fragment.
         View startingView = inflater.inflate(R.layout.fragment_starting, container, false);
 
         joinButton = (Button) startingView.findViewById(R.id.joinButton);
@@ -98,23 +105,41 @@ public class StartingFragment extends Fragment {
 
     public Future<Object> start() {
         Promise<Object> promise = new Promise<>();
-        appInstance.startLocalMedia(getActivity(), getVideoContainer()).then(resultStart -> {
-            appInstance.joinAsync().then(resultJoin -> {
-                String message = String.format("Client %s has successfully joined channel %s.",
-                        appInstance.getClient().getId(),
-                        appInstance.getChannel().getId());
-                setStatusText(message);
-                promise.resolve(null);
+        if(appInstance instanceof MCUHelloWorldLogic) {
+            appInstance.startLocalMedia(getActivity(), getVideoContainer()).then(resultStart -> {
+                appInstance.joinAsync().then(resultJoin -> {
+                    String message = String.format("Client %s has successfully joined channel %s.",
+                            appInstance.getClient().getId(),
+                            appInstance.getChannel().getId());
+                    setStatusText(message);
+                    promise.resolve(null);
+                }).fail(ex -> {
+                    setStatusText("Unable to join channel.");
+                    promise.reject(ex);
+                });
+
             }).fail(ex -> {
-                setStatusText("Unable to join channel.");
-                promise.reject(ex);
+                setStatusText("Unable to start local media.");
+                promise.reject(null);
             });
+        } else if(appInstance instanceof SFUHelloWorldLogic) {
+            appInstance.startLocalMedia(getActivity(), getVideoContainer()).then(resultStart -> {
+                appInstance.joinAsync().then(resultJoin -> {
+                    String message = String.format("Client %s has successfully joined channel %s.",
+                            appInstance.getClient().getId(),
+                            appInstance.getChannel().getId());
+                    setStatusText(message);
+                    promise.resolve(null);
+                }).fail(ex -> {
+                    setStatusText("Unable to join channel.");
+                    promise.reject(ex);
+                });
 
-        }).fail(ex -> {
-            setStatusText("Unable to start local media.");
-            promise.reject(null);
-        });
-
+            }).fail(ex -> {
+                setStatusText("Unable to start local media.");
+                promise.reject(null);
+            });
+        }
         return promise;
     }
 

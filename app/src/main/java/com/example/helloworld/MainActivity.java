@@ -38,14 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     BaseHelloWorldLogic appInstance;
 
-    public Boolean isSFUSelected = false;
+    public Boolean isSFUSelected = null;
     private FrameLayout fullscreenContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        appInstance = HelloWorldLogicMediator.Companion.getInstance(this.isSFUSelected, this.getBaseContext());
         fullscreenContainer = findViewById(R.id.fullscreenContainer);
         setupAllFragments();
     }

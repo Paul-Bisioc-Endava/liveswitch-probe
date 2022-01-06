@@ -10,19 +10,19 @@ import fm.liveswitch.LocalMedia
  */
 
 class HelloWorldLogicMediator {
+    fun openConnection(isSFU: Boolean, localMedia: LocalMedia, context: Context) {
+        if(isSFU)
+            (getInstance(isSFU, context) as SFUHelloWorldLogic).openSfuUpstreamConnection(localMedia)
+        else
+            (getInstance(isSFU, context) as MCUHelloWorldLogic).openMcuConnection()
+    }
+
     companion object {
         fun getInstance(isSFU: Boolean, context: Context): BaseHelloWorldLogic {
             return if (isSFU)
                 SFUHelloWorldLogic.getInstance(context)
             else
                 MCUHelloWorldLogic.getInstance(context)
-        }
-
-        fun openConnection(isSFU: Boolean, localMedia: LocalMedia) {
-            if(isSFU)
-                SFUHelloWorldLogic.openSfuUpstreamConnection(localMedia)
-            else
-                //MCUHelloWorldLogic.openMcuConnection()
         }
     }
 }

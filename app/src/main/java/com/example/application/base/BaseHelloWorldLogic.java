@@ -31,7 +31,7 @@ public class BaseHelloWorldLogic {
 
     protected final Context context;
     protected final Handler handler;
-    private static BaseHelloWorldLogic app;
+    public static BaseHelloWorldLogic app;
 
     private String applicationId = Config.applicationId;
     private String channelId = Config.channelId;
@@ -63,7 +63,7 @@ public class BaseHelloWorldLogic {
 
     // Client and channel
     private Client client;
-    protected static Channel channel;
+    protected Channel channel;
 
     public Channel getChannel() {
         return channel;
