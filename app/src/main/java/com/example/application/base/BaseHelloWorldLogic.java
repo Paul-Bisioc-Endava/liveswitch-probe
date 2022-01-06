@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import com.example.application.AecContext;
 import com.example.application.CameraLocalMedia;
 import com.example.application.Config;
+import com.example.application.LocalMedia;
 
 import java.util.Locale;
 
@@ -28,8 +29,8 @@ import fm.liveswitch.android.LayoutManager;
  */
 public class BaseHelloWorldLogic {
 
-    private final Context context;
-    private final Handler handler;
+    protected final Context context;
+    protected final Handler handler;
     private static BaseHelloWorldLogic app;
 
     private String applicationId = Config.applicationId;
@@ -43,9 +44,9 @@ public class BaseHelloWorldLogic {
     boolean unregistering = false;
 
     // Start / Stop Local Media
-    private com.example.application.LocalMedia<View> localMedia;
-    private LayoutManager layoutManager;
-    private final com.example.application.AecContext aecContext = new AecContext();
+    protected LocalMedia<View> localMedia;
+    protected LayoutManager layoutManager;
+    protected final AecContext aecContext = new AecContext();
 
     public BaseHelloWorldLogic(Context context)
     {
@@ -62,7 +63,7 @@ public class BaseHelloWorldLogic {
 
     // Client and channel
     private Client client;
-    private Channel channel;
+    protected static Channel channel;
 
     public Channel getChannel() {
         return channel;
@@ -121,7 +122,7 @@ public class BaseHelloWorldLogic {
     }
 
     // Register the client with token.
-    private void onClientRegistered(Channel[] channels) {
+    protected void onClientRegistered(Channel[] channels) {
         // Store our channel reference.
         channel = channels[0];
 
