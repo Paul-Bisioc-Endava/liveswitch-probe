@@ -8,11 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.application.SFU.SFUHelloWorldLogic;
 import com.example.application.base.BaseHelloWorldLogic;
 import com.example.application.base.HelloWorldLogicMediator;
 
@@ -63,19 +66,21 @@ public class TextChannelFragment extends DialogFragment {
     private void setUpTextMessaging(View view) {
         inputField = (EditText) view.findViewById(R.id.chatMessageInput);
         inputField.setOnEditorActionListener((textView, i, keyEvent) -> {
-//            if (i == EditorInfo.IME_ACTION_DONE) {
-//                appInstance.sendMessage(inputField.getText().toString());
-//                inputField.setText("");
-//                return true;
-//            }
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                if(appInstance instanceof SFUHelloWorldLogic)
+                    ((SFUHelloWorldLogic) appInstance).sendMessage(inputField.getText().toString());
+                inputField.setText("");
+                return true;
+            }
             return false;
         });
 
-//        appInstance.setOnMessage(this::addTextChatMessage);
-//
-//        chatMessages = (TextView) view.findViewById(R.id.chatMessagesContainer);
-//        chatMessages.setMovementMethod(new ScrollingMovementMethod());
-//        chatMessages.setText(messages);
+        if(appInstance instanceof SFUHelloWorldLogic)
+            ((SFUHelloWorldLogic) appInstance).setOnMessage(this::addTextChatMessage);
+
+        chatMessages = (TextView) view.findViewById(R.id.chatMessagesContainer);
+        chatMessages.setMovementMethod(new ScrollingMovementMethod());
+        chatMessages.setText(messages);
 
         Button leaveButton = (Button) view.findViewById(R.id.exitChat);
         leaveButton.setOnClickListener(v -> getDialog().dismiss());

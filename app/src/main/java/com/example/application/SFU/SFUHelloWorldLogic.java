@@ -11,6 +11,8 @@ import fm.liveswitch.AudioStream;
 import fm.liveswitch.Channel;
 import fm.liveswitch.ConnectionInfo;
 import fm.liveswitch.ConnectionState;
+import fm.liveswitch.DataChannel;
+import fm.liveswitch.DataStream;
 import fm.liveswitch.LocalMedia;
 import fm.liveswitch.Log;
 import fm.liveswitch.ManagedConnection;
@@ -22,6 +24,15 @@ import fm.liveswitch.VideoStream;
 public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
     private SfuUpstreamConnection upstreamConnection;
     private final HashMap<String, SfuDownstreamConnection> downstreamConnections = new HashMap<>();
+
+    // Data channel for sending text messages.
+    private DataChannel textChannel;
+    private final String textChannelId = "text-channel";
+    private MessageAction onMessage;
+
+    public interface MessageAction {
+        void displayMessage(String message);
+    }
 
     public SFUHelloWorldLogic(Context context) {
         super(context);
@@ -39,8 +50,16 @@ public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
         AudioStream audioStream = (localMedia.getAudioTrack() != null) ? new AudioStream(localMedia) : null;
         VideoStream videoStream = (localMedia.getVideoTrack() != null) ? new VideoStream(localMedia) : null;
 
+        // Create data channel.
+        DataChannel dataChannelText = new DataChannel(textChannelId);
+        if (textChannel == null) {
+            textChannel = dataChannelText;
+        }
+        // Create a data stream with the data channel.
+        DataStream dataStream = new DataStream(dataChannelText);
+
         // Create a SFU upstream connection with local audio and video.
-        SfuUpstreamConnection connection = channel.createSfuUpstreamConnection(audioStream, videoStream);
+        SfuUpstreamConnection connection = channel.createSfuUpstreamConnection(audioStream, videoStream, dataStream);
 
         connection.addOnStateChange((ManagedConnection conn) -> {
             Log.info(String.format("Upstream connection %s is in a %s state.", conn.getId(), conn.getState().toString()));
@@ -63,6 +82,14 @@ public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
         // Create remote media.
         final SFURemoteMedia remoteMedia = new SFURemoteMedia(context, false, false, aecContext);
 
+        // Create data channel and set onReceive.
+        DataChannel dataChannelText = new DataChannel(textChannelId);
+        dataChannelText.setOnReceive(result -> {
+            onMessage.displayMessage(result.getDataString());
+        });
+        // Create data stream with the data channel.
+        DataStream dataStream = new DataStream(dataChannelText);
+
         // Adding remote view to UI.
         handler.post(() -> layoutManager.addRemoteView(remoteMedia.getId(), remoteMedia.getView()));
 
@@ -71,7 +98,7 @@ public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
         VideoStream videoStream = (remoteConnectionInfo.getHasVideo()) ? new VideoStream(remoteMedia) : null;
 
         // Create a SFU downstream connection with remote audio and video and data streams.
-        SfuDownstreamConnection connection = channel.createSfuDownstreamConnection(remoteConnectionInfo, audioStream, videoStream);
+        SfuDownstreamConnection connection = channel.createSfuDownstreamConnection(remoteConnectionInfo, audioStream, videoStream, dataStream);
 
         // Store the downstream connection.
         downstreamConnections.put(remoteMedia.getId(), connection);
@@ -122,6 +149,19 @@ public class SFUHelloWorldLogic extends BaseHelloWorldLogic {
         // each of them.
         for (ConnectionInfo connectionInfo : channel.getRemoteUpstreamConnectionInfos()) {
             openSfuDownstreamConnection(connectionInfo);
+        }
+    }
+
+
+    public void setOnMessage(MessageAction action) {
+        onMessage = action;
+    }
+
+    public void sendMessage(String message) {
+        if (textChannel != null) {
+            String chatMessage = getClient().getId() + ": " + message + "\n";
+            onMessage.displayMessage(chatMessage);
+            textChannel.sendDataString(chatMessage);
         }
     }
 }
